@@ -67,18 +67,72 @@ class ABIDecoder {
         // Strip out leading 0x if included
         let hexString = hexString.replacingOccurrences(of: "0x", with: "")
         // Create segments
-        let segments = (0..<types.count).compactMap { i -> Segment? in
+        var j = 0
+        var segments = [Segment]()
+        for i in 0..<types.count {
             let type = types[i]
-            if let staticPart = hexString.substr(i * 64, Int(type.staticPartLength) * 2) {
-                var dynamicOffset: String.Index?
-                if type.isDynamic, let offset = Int(staticPart, radix: 16) {
-                    guard (offset * 2) < hexString.count else { return nil }
-                    dynamicOffset = hexString.index(hexString.startIndex, offsetBy: offset * 2)
+
+            let add: (Int) throws -> Int = { n in
+                let staticPartLength = type.staticPartLength
+                if let staticPart = hexString.substr(n * 64, Int(staticPartLength) * 2) {
+                    var dynamicOffset: String.Index?
+                    if type.isDynamic, let offset = Int(staticPart, radix: 16) {
+                        guard (offset * 2) < hexString.count else {
+                            throw Error.couldNotDecodeType(type: type, string: hexString)
+                        }
+                        dynamicOffset = hexString.index(hexString.startIndex, offsetBy: offset * 2)
+                    }
+                    segments.append(Segment(type: type, dynamicOffset: dynamicOffset, staticString: staticPart))
                 }
-                return Segment(type: type, dynamicOffset: dynamicOffset, staticString: staticPart)
+                return Int(staticPartLength / 32)
             }
-            return nil
+
+            switch type {
+            case let .array(_, length):
+                if let length = length {
+                    for _ in 0..<length {
+                        let offset = try add(j)
+                        j += offset
+                    }
+                }
+                else {
+                    let offset = try add(j)
+                    j += offset
+                }
+            case let .tuple(elements):
+                if type.isDynamic {
+                    let offset = try add(j)
+                    j += offset
+                }
+                else {
+                    for _ in 0..<elements.count {
+                        let offset = try add(j)
+                        j += offset
+                    }
+                }
+            default:
+                let offset = try add(j)
+                j += offset
+            }
         }
+
+//        let segments = (0..<types.count).compactMap { i -> Segment? in
+//            let type = types[i]
+//            if case .array(_, let length) = type, let length = length {
+//                for k in 0..<length {
+//
+//                }
+//            }
+//            if let staticPart = hexString.substr(i * 64, Int(type.staticPartLength) * 2) {
+//                var dynamicOffset: String.Index?
+//                if type.isDynamic, let offset = Int(staticPart, radix: 16) {
+//                    guard (offset * 2) < hexString.count else { return nil }
+//                    dynamicOffset = hexString.index(hexString.startIndex, offsetBy: offset * 2)
+//                }
+//                return Segment(type: type, dynamicOffset: dynamicOffset, staticString: staticPart)
+//            }
+//            return nil
+//        }
         let decoded = try decodeSegments(segments, from: hexString)
         return decoded.compactMap { $0.decodedValue }
     }
@@ -190,17 +244,51 @@ class ABIDecoder {
         guard let string = lengthString, let length = Int(string, radix: 16) else {
             throw Error.couldNotParseLength
         }
-        return try decodeFixedArray(elementType: elementType, length: length, from: valueString)
+        if case .array(let internalType, _) = elementType {
+            return try decodeFixedArray(elementType: internalType, length: length, from: valueString)
+        }
+        else {
+            throw Error.couldNotDecodeType(type: elementType, string: hexString)
+        }
     }
     
     private class func decodeFixedArray(elementType: SolidityType, length: Int, from hexString: String) throws -> [Any] {
         guard length > 0 else { return [] }
-        let elementSize = hexString.count / length
-        return try (0..<length).compactMap { n in
-            if let elementString = hexString.substr(n * elementSize, elementSize) {
-                return try decodeType(type: elementType, hexString: elementString)
+        if elementType.isDynamic { // , case .tuple = elementType {
+//            let element = try decode(elementType, from: hexString)
+//            return [element]
+            let offsets = (0..<length).compactMap { i -> Int? in
+                if let offsetString = hexString.substr(i * 64, 64), let offset = Int(offsetString, radix: 16) {
+                    return offset
+                } else {
+                    return nil
+                }
             }
-            return nil
+            guard offsets.count == length else {
+                throw Error.couldNotParseLength
+            }
+
+            var lengths = [Int]()
+            for i in 0..<length - 1 {
+                lengths.append(offsets[i+1] - offsets[i])
+            }
+            lengths.append(hexString.count / 2 - offsets.last!)
+
+            return try (0..<length).compactMap { n in
+                if let elementString = hexString.substr(offsets[n] * 2, lengths[n] * 2) {
+                    return try decodeType(type: elementType, hexString: elementString)
+                }
+                return nil
+            }
+        }
+        else {
+            let elementSize = hexString.count / length
+            return try (0..<length).compactMap { n in
+                if let elementString = hexString.substr(n * elementSize, elementSize) {
+                    return try decodeType(type: elementType, hexString: elementString)
+                }
+                return nil
+            }
         }
     }
     

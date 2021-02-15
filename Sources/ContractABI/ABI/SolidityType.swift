@@ -119,7 +119,7 @@ public indirect enum SolidityType {
             return type.isDynamic || length == nil
         case .tuple(let types):
             //(T1,...,Tk) if any Ti is dynamic for 1 <= i <= k
-            return types.count > 1 || types.filter { $0.isDynamic }.count > 0
+            return /* types.count > 1 || */ types.filter { $0.isDynamic }.count > 0
         }
     }
     
@@ -150,6 +150,15 @@ public indirect enum SolidityType {
                 return length * type.staticPartLength
             }
             return 32
+        case .tuple(let types):
+            if self.isDynamic {
+                return 32
+            }
+            else {
+                return types.reduce(0) { sum, type -> UInt in
+                    sum + type.staticPartLength
+                }
+            }
         default:
             return 32
         }
