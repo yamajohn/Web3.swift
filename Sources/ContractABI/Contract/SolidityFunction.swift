@@ -20,26 +20,26 @@ public protocol SolidityFunctionHandler: class {
 
 public protocol SolidityParameter {
     var name: String { get }
-    var type: SolidityType { get }
+    var type: ABIType { get }
     var components: [SolidityParameter]? { get }
 }
 
 /// Represents a value that can be passed into a function or is returned from a function
 public struct SolidityFunctionParameter: SolidityParameter {
     public let name: String
-    public let type: SolidityType
+    public let type: ABIType
     public let components: [SolidityParameter]?
     
     public init?(_ parameter: ABIObject.Parameter) {
         self.name = parameter.name
         let components = parameter.components?.compactMap { SolidityFunctionParameter($0) }
         let subTypes = components?.map { $0.type }
-        guard let type = SolidityType(parameter.type, subTypes: subTypes) else { return nil }
+        guard let type = ABIType(parameter.type, subTypes: subTypes) else { return nil }
         self.type = type
         self.components = components
     }
     
-    public init(name: String, type: SolidityType, components: [SolidityFunctionParameter]? = nil) {
+    public init(name: String, type: ABIType, components: [SolidityFunctionParameter]? = nil) {
         self.name = name
         self.type = type
         self.components = components
@@ -78,7 +78,7 @@ public protocol SolidityFunction: class {
 public extension SolidityFunction {
     
     var signature: String {
-        return "\(name)(\(inputs.map { $0.type.stringValue }.joined(separator: ",")))"
+        return "\(name)(\(inputs.map { $0.type.description }.joined(separator: ",")))"
     }
     
 }

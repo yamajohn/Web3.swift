@@ -22,11 +22,11 @@ class SolidityWrappedValueTests: XCTestCase {
         let uint64 = UInt64(0)
         let uint256 = BigUInt(0)
         
-        XCTAssertEqual(SolidityWrappedValue.uint(uint8).type, .uint8)
-        XCTAssertEqual(SolidityWrappedValue.uint(uint16).type, .uint16)
-        XCTAssertEqual(SolidityWrappedValue.uint(uint32).type, .uint32)
-        XCTAssertEqual(SolidityWrappedValue.uint(uint64).type, .uint64)
-        XCTAssertEqual(SolidityWrappedValue.uint(uint256).type, .uint256)
+        XCTAssertEqual(SolidityWrappedValue.uint(uint8).type, .uint(bits: 8))
+        XCTAssertEqual(SolidityWrappedValue.uint(uint16).type, .uint(bits: 16))
+        XCTAssertEqual(SolidityWrappedValue.uint(uint32).type, .uint(bits: 32))
+        XCTAssertEqual(SolidityWrappedValue.uint(uint64).type, .uint(bits: 64))
+        XCTAssertEqual(SolidityWrappedValue.uint(uint256).type, .uint(bits: 256))
     }
     
     func testInt() {
@@ -36,11 +36,11 @@ class SolidityWrappedValueTests: XCTestCase {
         let int64 = Int64(0)
         let int256 = BigInt(0)
         
-        XCTAssertEqual(SolidityWrappedValue.int(int8).type, .int8)
-        XCTAssertEqual(SolidityWrappedValue.int(int16).type, .int16)
-        XCTAssertEqual(SolidityWrappedValue.int(int32).type, .int32)
-        XCTAssertEqual(SolidityWrappedValue.int(int64).type, .int64)
-        XCTAssertEqual(SolidityWrappedValue.int(int256).type, .int256)
+        XCTAssertEqual(SolidityWrappedValue.int(int8).type, .int(bits: 8))
+        XCTAssertEqual(SolidityWrappedValue.int(int16).type, .int(bits: 16))
+        XCTAssertEqual(SolidityWrappedValue.int(int32).type, .int(bits: 32))
+        XCTAssertEqual(SolidityWrappedValue.int(int64).type, .int(bits: 64))
+        XCTAssertEqual(SolidityWrappedValue.int(int256).type, .int(bits: 256))
     }
     
     func testString() {
@@ -50,21 +50,21 @@ class SolidityWrappedValueTests: XCTestCase {
     
     func testBytes() {
         let bytes = Data("hi!".utf8)
-        XCTAssertEqual(SolidityWrappedValue.bytes(bytes).type, .bytes(length: nil))
-        XCTAssertEqual(SolidityWrappedValue.fixedBytes(bytes).type, .bytes(length: UInt(bytes.count)))
+        XCTAssertEqual(SolidityWrappedValue.bytes(bytes).type, .dynamicBytes)
+        XCTAssertEqual(SolidityWrappedValue.fixedBytes(bytes).type, .bytes(bytes.count))
     }
     
     func testArray() {
         let array = ["one", "two", "three"]
-        XCTAssertEqual(SolidityWrappedValue.array(array).type, .array(type: .string, length: nil))
-        XCTAssertEqual(SolidityWrappedValue.fixedArray(array).type, .array(type: .string, length: 3))
+        XCTAssertEqual(SolidityWrappedValue.array(array).type, .dynamicArray(.string))
+        XCTAssertEqual(SolidityWrappedValue.fixedArray(array).type, .array(.string, 3))
     }
     
     func testNestedArray() {
         let array = [["one", "two"], ["three"]]
         let deepNestedArray = [[["one"], ["two"]], [["three"]]]
-        XCTAssertEqual(SolidityWrappedValue.array(array).type, .array(type: .array(type: .string, length: nil), length: nil))
-        XCTAssertEqual(SolidityWrappedValue.array(deepNestedArray).type, .array(type: .array(type: .array(type: .string, length: nil), length: nil), length: nil))
+        XCTAssertEqual(SolidityWrappedValue.array(array).type, .dynamicArray(.dynamicArray(.string)))
+        XCTAssertEqual(SolidityWrappedValue.array(deepNestedArray).type, .dynamicArray(.dynamicArray(.dynamicArray(.string))))
     }
     
     func testAddress() {

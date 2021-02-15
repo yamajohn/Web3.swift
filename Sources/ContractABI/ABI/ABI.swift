@@ -16,7 +16,6 @@ public struct ABI {
     
     enum Error: Swift.Error {
         case unknownError
-        case notImplemented
     }
     
     // MARK: - Encoding
@@ -29,7 +28,7 @@ public struct ABI {
         return "0x" + event.signature.sha3(.keccak256)
     }
     
-    public static func encodeParameter(type: SolidityType, value: ABIEncodable) throws -> String {
+    public static func encodeParameter(type: ABIType, value: ABIEncodable) throws -> String {
         let encoded = try ABIEncoder.encode(value, to: type)
         return "0x" + encoded
     }
@@ -39,7 +38,7 @@ public struct ABI {
         return "0x" + encoded
     }
     
-    public static func encodeParameters(types: [SolidityType], values: [ABIEncodable]) throws -> String {
+    public static func encodeParameters(types: [ABIType], values: [ABIEncodable]) throws -> String {
         let wrappedValues = zip(types, values).map { SolidityWrappedValue(value: $0.1, type: $0.0) }
         return try encodeParameters(wrappedValues)
     }
@@ -57,11 +56,11 @@ public struct ABI {
     
     // MARK: - Decoding
     
-    public static func decodeParameter(type: SolidityType, from hexString: String) throws -> Any {
+    public static func decodeParameter(type: ABIType, from hexString: String) throws -> Any {
         return try ABIDecoder.decode(type, from: hexString)
     }
     
-    public static func decodeParameters(types: [SolidityType], from hexString: String ) throws -> [Any] {
+    public static func decodeParameters(types: [ABIType], from hexString: String ) throws -> [Any] {
         return try ABIDecoder.decode(types, from: hexString)
     }
     

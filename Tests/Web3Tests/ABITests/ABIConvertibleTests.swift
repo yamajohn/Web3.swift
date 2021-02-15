@@ -21,25 +21,25 @@ class ABIConvertibleTests: QuickSpec {
         describe("Solidity Representable") {
             
             it("should work with String") {
-                expect(String.solidityType).to(equal(SolidityType.type(.string)))
+                expect(String.solidityType).to(equal(.string))
             }
             
             it("should work with Bool") {
-                expect(Bool.solidityType).to(equal(SolidityType.type(.bool)))
+                expect(Bool.solidityType).to(equal(.bool))
             }
             
             it("should work with Unsigned Integers") {
-                expect(UInt16.solidityType).to(equal(SolidityType.type(.uint16)))
-                expect(BigUInt.solidityType).to(equal(SolidityType.type(.uint256)))
+                expect(UInt16.solidityType).to(equal(.uint(bits: 16)))
+                expect(BigUInt.solidityType).to(equal(.uint(bits: 256)))
             }
             
             it("should work with Signed Integers") {
-                expect(BigInt.solidityType).to(equal(SolidityType.type(.int256)))
-                expect(Int8.solidityType).to(equal(SolidityType.type(.int8)))
+                expect(BigInt.solidityType).to(equal(.int(bits: 256)))
+                expect(Int8.solidityType).to(equal(.int(bits: 8)))
             }
             
             it("should work with EthereumAddress") {
-                expect(EthereumAddress.solidityType).to(equal(SolidityType.type(.address)))
+                expect(EthereumAddress.solidityType).to(equal(.address))
             }
             
         }

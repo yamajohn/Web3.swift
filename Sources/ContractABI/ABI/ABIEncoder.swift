@@ -11,14 +11,14 @@ import BigInt
 class ABIEncoder {
     
     enum Error: Swift.Error {
-        case couldNotEncode(type: SolidityType, value: Any)
+        case couldNotEncode(type: ABIType, value: Any)
     }
     
     struct Segment {
-        let type: SolidityType
+        let type: ABIType
         let encodedValue: String
         
-        init(type: SolidityType, value: String) {
+        init(type: ABIType, value: String) {
             self.type = type
             self.encodedValue = value
         }
@@ -73,7 +73,7 @@ class ABIEncoder {
     }
     
     /// Encode a single value to a type
-    public class func encode(_ value: ABIEncodable, to type: SolidityType) throws -> String {
+    public class func encode(_ value: ABIEncodable, to type: ABIType) throws -> String {
         if let encoded = value.abiEncode(dynamic: type.isDynamic) {
             return encoded
         }

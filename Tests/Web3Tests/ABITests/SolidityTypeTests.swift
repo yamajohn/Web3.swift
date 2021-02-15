@@ -16,54 +16,54 @@ import BigInt
 class SolidityTypeTests: XCTestCase {
     
     func testDecodingStringType() {
-        XCTAssertEqual(try? SolidityType("string"), .string, "String type should be parsed")
-        XCTAssertEqual(SolidityType.string.stringValue, "string", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("string"), .string, "String type should be parsed")
+        XCTAssertEqual(ABIType.string.description, "string", "Should return the correct string representation")
     }
     
     func testDecodingBoolType() {
-        XCTAssertEqual(try? SolidityType("bool"), .bool, "Bool type should be parsed")
-        XCTAssertEqual(SolidityType.bool.stringValue, "bool", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("bool"), .bool, "Bool type should be parsed")
+        XCTAssertEqual(ABIType.bool.description, "bool", "Should return the correct string representation")
     }
     
     func testDecodingAddressType() {
-        XCTAssertEqual(try? SolidityType("address"), .address, "Address type should be parsed")
-        XCTAssertEqual(SolidityType.address.stringValue, "address", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("address"), .address, "Address type should be parsed")
+        XCTAssertEqual(ABIType.address.description, "address", "Should return the correct string representation")
     }
     
     func testDecodingBytesType() {
-        XCTAssertEqual(try? SolidityType("bytes"), .bytes(length: nil), "Bytes type should be parsed")
-        XCTAssertEqual(SolidityType.bytes(length: nil).stringValue, "bytes", "Should return the correct string representation")
-        XCTAssertEqual(try? SolidityType("bytes5"), .bytes(length: 5), "Bytes5 type should be parsed")
-        XCTAssertEqual(SolidityType.bytes(length: 5).stringValue, "bytes5", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("bytes"), .dynamicBytes, "Bytes type should be parsed")
+        XCTAssertEqual(ABIType.dynamicBytes.description, "bytes", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("bytes5"), .bytes(5), "Bytes5 type should be parsed")
+        XCTAssertEqual(ABIType.bytes(5).description, "bytes5", "Should return the correct string representation")
     }
     
     func testDecodingNumberTypes() {
         // uint
-        XCTAssertEqual(try? SolidityType("uint"), .uint, "Uint type should be parsed")
-        XCTAssertEqual(SolidityType.uint.stringValue, "uint256", "Should return the correct string representation")
-        XCTAssertEqual(try? SolidityType("uint8"), .uint8, "Uint8 type should be parsed")
-        XCTAssertEqual(SolidityType.uint8.stringValue, "uint8", "Should return the correct string representation")
-        XCTAssertEqual(try? SolidityType("uint16"), .uint16, "Uint16 type should be parsed")
-        XCTAssertEqual(SolidityType.uint16.stringValue, "uint16", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("uint"), .uint(bits: 256), "Uint type should be parsed")
+        XCTAssertEqual(ABIType.uint(bits: 256).description, "uint256", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("uint8"), .uint(bits: 8), "Uint8 type should be parsed")
+        XCTAssertEqual(ABIType.uint(bits: 8).description, "uint8", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("uint16"), .uint(bits: 16), "Uint16 type should be parsed")
+        XCTAssertEqual(ABIType.uint(bits: 16).description, "uint16", "Should return the correct string representation")
         // int
-        XCTAssertEqual(try? SolidityType("int"), .int, "Int type should be parsed")
-        XCTAssertEqual(SolidityType.int.stringValue, "int256", "Should return the correct string representation")
-        XCTAssertEqual(try? SolidityType("int8"), .int8, "Int8 type should be parsed")
-        XCTAssertEqual(SolidityType.int8.stringValue, "int8", "Should return the correct string representation")
-        XCTAssertEqual(try? SolidityType("int16"), .int16, "Int16 type should be parsed")
-        XCTAssertEqual(SolidityType.int16.stringValue, "int16", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("int"), .int(bits: 256), "Int type should be parsed")
+        XCTAssertEqual(ABIType.int(bits: 256).description, "int256", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("int8"), .int(bits: 8), "Int8 type should be parsed")
+        XCTAssertEqual(ABIType.int(bits: 8).description, "int8", "Should return the correct string representation")
+        XCTAssertEqual(try? ABIType("int16"), .int(bits: 16), "Int16 type should be parsed")
+        XCTAssertEqual(ABIType.int(bits: 16).description, "int16", "Should return the correct string representation")
     }
     
     func testDecodingArrayType() {
-        XCTAssertEqual(try? SolidityType("string[]"), .array(type: .string, length: nil), "dynamic array type should be parsed")
-        XCTAssertEqual(try? SolidityType("int32[]"), .array(type: .int32, length: nil), "dynamic array type should be parsed")
-        XCTAssertEqual(try? SolidityType("string[4]"), .array(type: .string, length: 4), "fixed array type should be parsed")
-        XCTAssertEqual(try? SolidityType("bytes3[10]"), .array(type: .bytes(length: 3), length: 10), "fixed array type should be parsed")
-        XCTAssertEqual(try? SolidityType("string[][]"), .array(type: .array(type: .string, length: nil), length: nil), "dynamic nested array should be parsed")
-        XCTAssertEqual(try? SolidityType("string[3][]"), .array(type: .array(type: .string, length: 3), length: nil), "dynamic array of fixed array should be parsed")
-        XCTAssertEqual(try? SolidityType("string[][7]"), .array(type: .array(type: .string, length: nil), length: 7), "fixed array of dynamic array should be parsed")
-        XCTAssertEqual(try? SolidityType("string[1][2]"), .array(type: .array(type: .string, length: 1), length: 2), "fixed nested array should be parsed")
-        XCTAssertEqual(try? SolidityType("string[][][2]"), .array(type: .array(type: .array(type: .string, length: nil), length: nil), length: 2), "dynamic nested array should be parsed")
+        XCTAssertEqual(try? ABIType("string[]"), .dynamicArray(.string), "dynamic array type should be parsed")
+        XCTAssertEqual(try? ABIType("int32[]"), .dynamicArray(.int(bits: 32)), "dynamic array type should be parsed")
+        XCTAssertEqual(try? ABIType("string[4]"), .array(.string, 4), "fixed array type should be parsed")
+        XCTAssertEqual(try? ABIType("bytes3[10]"), .array(.bytes(3), 10), "fixed array type should be parsed")
+        XCTAssertEqual(try? ABIType("string[][]"), .dynamicArray(.dynamicArray(.string)), "dynamic nested array should be parsed")
+        XCTAssertEqual(try? ABIType("string[3][]"), .dynamicArray(.array(.string, 3)), "dynamic array of fixed array should be parsed")
+        XCTAssertEqual(try? ABIType("string[][7]"), .array(.dynamicArray(.string), 7), "fixed array of dynamic array should be parsed")
+        XCTAssertEqual(try? ABIType("string[1][2]"), .array(.array(.string, 1), 2), "fixed nested array should be parsed")
+        XCTAssertEqual(try? ABIType("string[][][2]"), .array(.dynamicArray(.dynamicArray(.string)), 2), "dynamic nested array should be parsed")
     }
     
 }

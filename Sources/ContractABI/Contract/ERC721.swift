@@ -64,7 +64,7 @@ public extension ERC721Contract {
         let inputs: [SolidityEvent.Parameter] = [
             SolidityEvent.Parameter(name: "_from", type: .address, indexed: true),
             SolidityEvent.Parameter(name: "_to", type: .address, indexed: true),
-            SolidityEvent.Parameter(name: "_tokenId", type: .uint256, indexed: false)
+            SolidityEvent.Parameter(name: "_tokenId", type: .uint(bits: 256), indexed: false)
         ]
         return SolidityEvent(name: "Transfer", anonymous: false, inputs: inputs)
     }
@@ -73,20 +73,20 @@ public extension ERC721Contract {
         let inputs: [SolidityEvent.Parameter] = [
             SolidityEvent.Parameter(name: "_owner", type: .address, indexed: true),
             SolidityEvent.Parameter(name: "_approved", type: .address, indexed: true),
-            SolidityEvent.Parameter(name: "_tokenId", type: .uint256, indexed: false)
+            SolidityEvent.Parameter(name: "_tokenId", type: .uint(bits: 256), indexed: false)
         ]
         return SolidityEvent(name: "Approval", anonymous: false, inputs: inputs)
     }
     
     func balanceOf(address: EthereumAddress) -> SolidityInvocation {
         let inputs = [SolidityFunctionParameter(name: "_owner", type: .address)]
-        let outputs = [SolidityFunctionParameter(name: "_balance", type: .uint256)]
+        let outputs = [SolidityFunctionParameter(name: "_balance", type: .uint(bits: 256))]
         let method = SolidityConstantFunction(name: "balanceOf", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(address)
     }
     
     func ownerOf(tokenId: BigUInt) -> SolidityInvocation {
-        let inputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint256)]
+        let inputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))]
         let outputs = [SolidityFunctionParameter(name: "_owner", type: .address)]
         let method = SolidityConstantFunction(name: "ownerOf", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(tokenId)
@@ -95,14 +95,14 @@ public extension ERC721Contract {
     func approve(to: EthereumAddress, tokenId: BigUInt) -> SolidityInvocation {
         let inputs = [
             SolidityFunctionParameter(name: "_to", type: .address),
-            SolidityFunctionParameter(name: "_tokenId", type: .uint256)
+            SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))
         ]
         let method = SolidityNonPayableFunction(name: "approve", inputs: inputs, handler: self)
         return method.invoke(to, tokenId)
     }
     
     func getApproved(tokenId: BigUInt) -> SolidityInvocation {
-        let inputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint256)]
+        let inputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))]
         let outputs = [SolidityFunctionParameter(name: "_approved", type: .address)]
         let method = SolidityConstantFunction(name: "getApproved", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(tokenId)
@@ -112,7 +112,7 @@ public extension ERC721Contract {
         let inputs = [
             SolidityFunctionParameter(name: "_from", type: .address),
             SolidityFunctionParameter(name: "_to", type: .address),
-            SolidityFunctionParameter(name: "_tokenId", type: .uint256)
+            SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))
         ]
         let method = SolidityNonPayableFunction(name: "transferFrom", inputs: inputs, handler: self)
         return method.invoke(from, to, tokenId)
@@ -121,7 +121,7 @@ public extension ERC721Contract {
     func transfer(to: EthereumAddress, tokenId: BigUInt) -> SolidityInvocation {
         let inputs = [
             SolidityFunctionParameter(name: "_to", type: .address),
-            SolidityFunctionParameter(name: "_tokenId", type: .uint256)
+            SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))
         ]
         let method = SolidityNonPayableFunction(name: "transfer", inputs: inputs, handler: self)
         return method.invoke(to, tokenId)
@@ -144,7 +144,7 @@ public extension AnnotatedERC721 {
     }
     
     func tokenURI(tokenId: BigUInt) -> SolidityInvocation {
-        let inputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint256)]
+        let inputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))]
         let outputs = [SolidityFunctionParameter(name: "_tokenURI", type: .string)]
         let method = SolidityConstantFunction(name: "tokenURI", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(tokenId)
@@ -155,14 +155,14 @@ public extension AnnotatedERC721 {
 public extension EnumeratedERC721 {
     
     func totalSupply() -> SolidityInvocation {
-        let outputs = [SolidityFunctionParameter(name: "_totalSupply", type: .uint256)]
+        let outputs = [SolidityFunctionParameter(name: "_totalSupply", type: .uint(bits: 256))]
         let method = SolidityConstantFunction(name: "totalSupply", outputs: outputs, handler: self)
         return method.invoke()
     }
     
     func tokenByIndex(index: BigUInt) -> SolidityInvocation {
-        let inputs = [SolidityFunctionParameter(name: "_index", type: .uint256)]
-        let outputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint256)]
+        let inputs = [SolidityFunctionParameter(name: "_index", type: .uint(bits: 256))]
+        let outputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))]
         let method = SolidityConstantFunction(name: "tokenByIndex", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(index)
     }
@@ -170,9 +170,9 @@ public extension EnumeratedERC721 {
     func tokenOfOwnerByIndex(owner: EthereumAddress, index: BigUInt) -> SolidityInvocation {
         let inputs = [
             SolidityFunctionParameter(name: "_owner", type: .address),
-            SolidityFunctionParameter(name: "_index", type: .uint256)
+            SolidityFunctionParameter(name: "_index", type: .uint(bits: 256))
         ]
-        let outputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint256)]
+        let outputs = [SolidityFunctionParameter(name: "_tokenId", type: .uint(bits: 256))]
         let method = SolidityConstantFunction(name: "tokenOfOwnerByIndex", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(owner, index)
     }

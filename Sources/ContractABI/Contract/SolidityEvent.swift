@@ -29,7 +29,7 @@ public struct SolidityEvent {
         public let name: String
         
         /// Type of the value
-        public let type: SolidityType
+        public let type: ABIType
         
         /// Used to describe a tuple's sub-parameters
         public let components: [SolidityParameter]?
@@ -43,13 +43,13 @@ public struct SolidityEvent {
             self.name = abi.name
             let components = abi.components?.compactMap { Parameter($0) }
             let subTypes = components?.map { $0.type }
-            guard let type = SolidityType(abi.type, subTypes: subTypes) else { return nil }
+            guard let type = ABIType(abi.type, subTypes: subTypes) else { return nil }
             self.type = type
             self.components = components
             self.indexed = abi.indexed ?? false
         }
         
-        public init(name: String, type: SolidityType, indexed: Bool, components: [Parameter]? = nil) {
+        public init(name: String, type: ABIType, indexed: Bool, components: [Parameter]? = nil) {
             self.name = name
             self.type = type
             self.components = components
@@ -69,7 +69,7 @@ public struct SolidityEvent {
     
     /// A string representing the signature of the event
     public var signature: String {
-        return "\(name)(\(inputs.map { $0.type.stringValue }.joined(separator: ",")))"
+        return "\(name)(\(inputs.map { $0.type.description }.joined(separator: ",")))"
     }
     
     private var indexedInputs: [Parameter] {

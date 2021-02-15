@@ -12,8 +12,9 @@ import BigInt
 #endif
 
 /// A type that is always represented as a single SolidityType
+#warning("rename ABIType...")
 public protocol SolidityTypeRepresentable {
-    static var solidityType: SolidityType { get }
+    static var solidityType: ABIType { get }
 }
 
 /// A type that can be converted to and from Solidity ABI bytes
@@ -48,8 +49,8 @@ extension FixedWidthInteger where Self: UnsignedInteger {
         return String(self, radix: 16).paddingLeft(toLength: 64, withPad: "0")
     }
     
-    public static var solidityType: SolidityType {
-        return SolidityType.type(.uint(bits: UInt16(bitWidth)))
+    public static var solidityType: ABIType {
+        return ABIType.uint(bits: bitWidth)
     }
 }
 
@@ -111,8 +112,8 @@ extension FixedWidthInteger where Self: SignedInteger {
         return String(self, radix: 16).paddingLeft(toLength: 64, withPad: "0")
     }
     
-    public static var solidityType: SolidityType {
-        return SolidityType.type(.int(bits: UInt16(bitWidth)))
+    public static var solidityType: ABIType {
+        return .int(bits: bitWidth)
     }
 }
 
@@ -152,8 +153,8 @@ extension BigInt: ABIConvertible {
 }
 
 extension BigInt: SolidityTypeRepresentable {
-    public static var solidityType: SolidityType {
-        return .int256
+    public static var solidityType: ABIType {
+        return .int(bits: 256)
     }
 }
 
@@ -169,8 +170,8 @@ extension BigUInt: ABIConvertible {
 }
 
 extension BigUInt: SolidityTypeRepresentable {
-    public static var solidityType: SolidityType {
-        return .uint256
+    public static var solidityType: ABIType {
+        return .uint(bits: 256)
     }
 }
 
@@ -195,7 +196,7 @@ extension Bool: ABIConvertible {
 }
 
 extension Bool: SolidityTypeRepresentable {
-    public static var solidityType: SolidityType {
+    public static var solidityType: ABIType {
         return .bool
     }
 }
@@ -219,7 +220,7 @@ extension String: ABIConvertible {
 }
 
 extension String: SolidityTypeRepresentable {
-    public static var solidityType: SolidityType {
+    public static var solidityType: ABIType {
         return .string
     }
 }
@@ -340,7 +341,7 @@ extension EthereumAddress: ABIConvertible {
 }
 
 extension EthereumAddress: SolidityTypeRepresentable {
-    public static var solidityType: SolidityType {
+    public static var solidityType: ABIType {
         return .address
     }
 }

@@ -1,5 +1,5 @@
 //
-//  SolidityType+Codable.swift
+//  ABIType+Codable.swift
 //  Web3
 //
 //  Created by Josh Pyles on 6/3/18.
@@ -36,26 +36,26 @@ extension NSRegularExpression {
     
 }
 
-extension SolidityType: Codable {
+extension ABIType: Codable {
     
     public enum Error: Swift.Error {
         case typeMalformed
     }
     
-    /// Initializes a SolidityType from a string
+    /// Initializes a ABIType from a string
     public init(_ string: String) throws {
-        self = try SolidityType.typeFromString(string)
+        self = try ABIType.typeFromString(string)
     }
     
-    /// Initializes a SolidityType from a given string and optional sub types
-    public init?(_ string: String, subTypes: [SolidityType]?) {
+    /// Initializes a ABIType from a given string and optional sub types
+    public init?(_ string: String, subTypes: [ABIType]?) {
         switch (string, subTypes) {
         case ("tuple", let subTypes?):
             self = .tuple(subTypes)
         case ("tuple[]", let subTypes?):
-            self = .array(type: .tuple(subTypes), length: nil)
+            self = .dynamicArray(.tuple(subTypes))
         default:
-            if let type = try? SolidityType(string) {
+            if let type = try? ABIType(string) {
                 self = type
             } else  {
                 return nil
@@ -63,8 +63,8 @@ extension SolidityType: Codable {
         }
     }
     
-    /// Determines the SolidityType from a given string, from the JSON representation
-    static func typeFromString(_ string: String) throws -> SolidityType {
+    /// Determines the ABIType from a given string, from the JSON representation
+    static func typeFromString(_ string: String) throws -> ABIType {
         switch string {
         case "string":
             return .string
@@ -73,17 +73,17 @@ extension SolidityType: Codable {
         case "bool":
             return .bool
         case "int":
-            return .int256
+            return .int(bits: 256)
         case "uint":
-            return .uint256
+            return .uint(bits: 256)
         case "bytes":
-            return .bytes(length: nil)
+            return .dynamicBytes
         default:
             return try parseTypeString(string)
         }
     }
     
-    static func parseTypeString(_ string: String) throws -> SolidityType {
+    static func parseTypeString(_ string: String) throws -> ABIType {
         if isArrayType(string) {
             return try arrayType(string)
         }
@@ -100,21 +100,26 @@ extension SolidityType: Codable {
         return NSRegularExpression.arrayMatch.matches(string)
     }
     
-    static func arraySizeAndType(_ string: String) -> (String?, UInt?) {
+    static func arraySizeAndType(_ string: String) -> (String?, Int?) {
         let capturedStrings = NSRegularExpression.arrayTypeMatch.matches(in: string)
         var strings = capturedStrings.dropFirst().makeIterator()
         let typeValue = strings.next()
-        if let sizeValue = strings.next(), let intValue = UInt(sizeValue) {
+        if let sizeValue = strings.next(), let intValue = Int(sizeValue) {
             return (typeValue, intValue)
         }
         return (typeValue, nil)
     }
     
-    static func arrayType(_ string: String) throws -> SolidityType {
+    static func arrayType(_ string: String) throws -> ABIType {
         let (innerTypeString, arraySize) = arraySizeAndType(string)
         if let innerTypeString = innerTypeString {
             let innerType = try typeFromString(innerTypeString)
-            return .array(type: innerType, length: arraySize)
+            if let arraySize = arraySize {
+                return .array(innerType, arraySize)
+            }
+            else {
+                return .dynamicArray(innerType)
+            }
         }
         throw Error.typeMalformed
     }
@@ -123,26 +128,26 @@ extension SolidityType: Codable {
         return NSRegularExpression.numberMatch.matches(string)
     }
     
-    static func numberType(_ string: String) -> SolidityType? {
+    static func numberType(_ string: String) -> ABIType? {
         let capturedStrings = NSRegularExpression.numberMatch.matches(in: string)
         var strings = capturedStrings.dropFirst().makeIterator()
         switch (strings.next(), strings.next()) {
         case ("uint", let bits):
             if let bits = bits {
-                if let intValue = UInt16(bits) {
-                    return .type(.uint(bits: intValue))
+                if let intValue = Int(bits) {
+                    return .uint(bits: intValue)
                 }
                 return nil
             }
-            return .uint256
+            return .uint(bits: 256)
         case ("int", let bits):
             if let bits = bits {
-                if let intValue = UInt16(bits) {
-                    return .type(.int(bits: intValue))
+                if let intValue = Int(bits) {
+                    return .int(bits: intValue)
                 }
                 return nil
             }
-            return .int256
+            return .int(bits: 256)
         default:
             return nil
         }
@@ -152,13 +157,13 @@ extension SolidityType: Codable {
         return NSRegularExpression.bytesMatch.matches(string)
     }
     
-    static func bytesType(_ string: String) -> SolidityType? {
+    static func bytesType(_ string: String) -> ABIType? {
         let sizeMatches = NSRegularExpression.bytesMatch.matches(in: string).dropFirst()
-        if let sizeString = sizeMatches.first, let size = UInt(sizeString) {
-            return .bytes(length: size)
+        if let sizeString = sizeMatches.first, let size = Int(sizeString) {
+            return .bytes(size)
         }
         // no size
-        return .bytes(length: nil)
+        return .dynamicBytes
     }
     
     public init(from decoder: Decoder) throws {
@@ -169,7 +174,7 @@ extension SolidityType: Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(stringValue)
+        try container.encode(description)
     }
     
 }

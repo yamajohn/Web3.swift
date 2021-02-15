@@ -56,7 +56,7 @@ public extension ERC20Contract {
         let inputs: [SolidityEvent.Parameter] = [
             SolidityEvent.Parameter(name: "_from", type: .address, indexed: true),
             SolidityEvent.Parameter(name: "_to", type: .address, indexed: true),
-            SolidityEvent.Parameter(name: "_value", type: .uint256, indexed: false)
+            SolidityEvent.Parameter(name: "_value", type: .uint(bits: 256), indexed: false)
         ]
         return SolidityEvent(name: "Transfer", anonymous: false, inputs: inputs)
     }
@@ -65,20 +65,20 @@ public extension ERC20Contract {
         let inputs: [SolidityEvent.Parameter] = [
             SolidityEvent.Parameter(name: "_owner", type: .address, indexed: true),
             SolidityEvent.Parameter(name: "_spender", type: .address, indexed: true),
-            SolidityEvent.Parameter(name: "_value", type: .uint256, indexed: false)
+            SolidityEvent.Parameter(name: "_value", type: .uint(bits: 256), indexed: false)
         ]
         return SolidityEvent(name: "Approval", anonymous: false, inputs: inputs)
     }
     
     func totalSupply() -> SolidityInvocation {
-        let outputs = [SolidityFunctionParameter(name: "_totalSupply", type: .uint256)]
+        let outputs = [SolidityFunctionParameter(name: "_totalSupply", type: .uint(bits: 256))]
         let method = SolidityConstantFunction(name: "totalSupply", outputs: outputs, handler: self)
         return method.invoke()
     }
     
     func balanceOf(address: EthereumAddress) -> SolidityInvocation {
         let inputs = [SolidityFunctionParameter(name: "_owner", type: .address)]
-        let outputs = [SolidityFunctionParameter(name: "_balance", type: .uint256)]
+        let outputs = [SolidityFunctionParameter(name: "_balance", type: .uint(bits: 256))]
         let method = SolidityConstantFunction(name: "balanceOf", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(address)
     }
@@ -86,7 +86,7 @@ public extension ERC20Contract {
     func approve(spender: EthereumAddress, value: BigUInt) -> SolidityInvocation {
         let inputs = [
             SolidityFunctionParameter(name: "_spender", type: .address),
-            SolidityFunctionParameter(name: "_value", type: .uint256)
+            SolidityFunctionParameter(name: "_value", type: .uint(bits: 256))
         ]
         let method = SolidityNonPayableFunction(name: "approve", inputs: inputs, handler: self)
         return method.invoke(spender, value)
@@ -98,7 +98,7 @@ public extension ERC20Contract {
             SolidityFunctionParameter(name: "_spender", type: .address)
         ]
         let outputs = [
-            SolidityFunctionParameter(name: "_remaining", type: .uint256)
+            SolidityFunctionParameter(name: "_remaining", type: .uint(bits: 256))
         ]
         let method = SolidityConstantFunction(name: "allowance", inputs: inputs, outputs: outputs, handler: self)
         return method.invoke(owner, spender)
@@ -108,7 +108,7 @@ public extension ERC20Contract {
         let inputs = [
             SolidityFunctionParameter(name: "_from", type: .address),
             SolidityFunctionParameter(name: "_to", type: .address),
-            SolidityFunctionParameter(name: "_value", type: .uint256)
+            SolidityFunctionParameter(name: "_value", type: .uint(bits: 256))
         ]
         let method = SolidityNonPayableFunction(name: "transferFrom", inputs: inputs, handler: self)
         return method.invoke(from, to, value)
@@ -117,7 +117,7 @@ public extension ERC20Contract {
     func transfer(to: EthereumAddress, value: BigUInt) -> SolidityInvocation {
         let inputs = [
             SolidityFunctionParameter(name: "_to", type: .address),
-            SolidityFunctionParameter(name: "_value", type: .uint256)
+            SolidityFunctionParameter(name: "_value", type: .uint(bits: 256))
         ]
         let method = SolidityNonPayableFunction(name: "transfer", inputs: inputs, handler: self)
         return method.invoke(to, value)
@@ -146,7 +146,7 @@ public extension AnnotatedERC20 {
     
     func decimals() -> SolidityInvocation {
         let outputs = [
-            SolidityFunctionParameter(name: "_decimals", type: .uint8)
+            SolidityFunctionParameter(name: "_decimals", type: .uint(bits: 8))
         ]
         let method = SolidityConstantFunction(name: "decimals", inputs: [], outputs: outputs, handler: self)
         return method.invoke()
