@@ -53,8 +53,13 @@ final class InternalABIDecoder {
 
     /// Decodes a dynamic array
     func decodeArray(type: ABIType) throws -> [ABIValue] {
-        let count = Int(decodeUInt())
-        return try decodeArray(type: type, count: count)
+        if case let .array(elemType, count) = type {
+            return try decodeArray(type: elemType, count: count)
+        }
+        else {
+            let count = Int(decodeUInt())
+            return try decodeArray(type: type, count: count)
+        }
     }
 
     /// Decodes a static array

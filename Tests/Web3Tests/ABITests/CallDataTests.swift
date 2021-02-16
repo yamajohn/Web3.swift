@@ -39,4 +39,11 @@ class CallDataTests: XCTestCase {
             XCTFail("ABI or call data is invalid")
         }
     }
+
+    func testEncoding() throws {
+        let enc = try ABI.encodeParameters(types: [.dynamicArray(.array(.uint(bits: 32), 3))],
+                                           values: [[[1,2,3],[4,5,6]]])
+        print(enc)
+//        let enc = ABI.encode
+    }
 }
