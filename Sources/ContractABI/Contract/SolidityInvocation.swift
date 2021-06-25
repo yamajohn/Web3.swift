@@ -199,7 +199,7 @@ public extension SolidityInvocation {
             return
         }
         let call = EthereumCall(from: from, to: to, gas: gas, gasPrice: gasPrice, value: value, data: data)
-        handler.estimateGas(call, completion: completion)
+        handler.estimateGas(call, block: .latest, completion: completion)
     }
     
     func encodeABI() -> EthereumData? {
