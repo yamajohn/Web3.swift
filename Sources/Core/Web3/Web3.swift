@@ -282,7 +282,7 @@ public struct Web3 {
         }
         
         public func sendTransaction(
-            transaction: EthereumTransaction,
+            transaction: EthereumTransactionContainer,
             response: @escaping Web3ResponseCompletion<EthereumData>
         ) {
             guard transaction.from != nil else {
@@ -290,13 +290,25 @@ public struct Web3 {
                 response(error)
                 return
             }
-            let req = RPCRequest<[EthereumTransaction]>(
-                id: properties.rpcId,
-                jsonrpc: Web3.jsonrpc,
-                method: "eth_sendTransaction",
-                params: [transaction]
-            )
-            properties.provider.send(request: req, response: response)
+
+            switch transaction {
+            case let .legacy(tx):
+                let req = RPCRequest<[EthereumTransaction]>(
+                    id: properties.rpcId,
+                    jsonrpc: Web3.jsonrpc,
+                    method: "eth_sendTransaction",
+                    params: [tx]
+                )
+                properties.provider.send(request: req, response: response)
+            case let .v2(tx):
+                let req = RPCRequest<[EthereumTransactionV2]>(
+                    id: properties.rpcId,
+                    jsonrpc: Web3.jsonrpc,
+                    method: "eth_sendTransaction",
+                    params: [tx]
+                )
+                properties.provider.send(request: req, response: response)
+            }
         }
 
         public func sendRawTransaction(

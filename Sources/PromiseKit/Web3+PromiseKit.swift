@@ -176,7 +176,7 @@ public extension Web3.Eth {
         }
     }
     
-    func sendTransaction(transaction: EthereumTransaction) -> Promise<EthereumData> {
+    func sendTransaction(transaction: EthereumTransactionContainer) -> Promise<EthereumData> {
         return Promise { seal in
             self.sendTransaction(transaction: transaction) { response in
                 response.sealPromise(seal: seal)

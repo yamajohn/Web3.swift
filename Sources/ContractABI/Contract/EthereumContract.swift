@@ -153,7 +153,7 @@ extension EthereumContract {
     ///   - gas: Maximum gas allowed for the transaction
     ///   - gasPrice: Amount of wei to spend per unit of gas
     ///   - completion: completion handler. Either the transaction's hash or an error.
-    public func send(_ transaction: EthereumTransaction, completion: @escaping (EthereumData?, Error?) -> Void) {
+    public func send(_ transaction: EthereumTransactionContainer, completion: @escaping (EthereumData?, Error?) -> Void) {
         eth.sendTransaction(transaction: transaction) { response in
             switch response.status {
             case .success(let hash):
