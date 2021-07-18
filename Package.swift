@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -20,8 +20,8 @@ let package = Package(
     ],
     dependencies: [
         // Core dependencies
-        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.0.0"),
-        .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.0.0"),
+        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.2.1"),
+        .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.4.1"),
         .package(name: "secp256k1", url: "https://github.com/Boilertalk/secp256k1.swift.git", from: "0.1.1"),
 
         // PromiseKit dependency
