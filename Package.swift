@@ -25,7 +25,7 @@ let package = Package(
         .package(name: "secp256k1", url: "https://github.com/Boilertalk/secp256k1.swift.git", from: "0.1.1"),
 
         // PromiseKit dependency
-        .package(url: "https://github.com/mxcl/PromiseKit.git", from: "6.0.0"),
+        .package(url: "https://github.com/mxcl/PromiseKit.git", from: "6.15.0"),
 
         // Test dependencies
         .package(url: "https://github.com/Quick/Quick.git", from: "3.0.0"),
