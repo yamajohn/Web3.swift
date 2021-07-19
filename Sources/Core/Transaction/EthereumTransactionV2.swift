@@ -214,16 +214,7 @@ public struct EthereumSignedTransactionV2 {
     // MARK: - Convenient functions
 
     public func verifySignature() -> Bool {
-        let recId: BigUInt
-        if v.quantity >= BigUInt(35) + (BigUInt(2) * chainId.quantity) {
-            recId = v.quantity - BigUInt(35) - (BigUInt(2) * chainId.quantity)
-        } else {
-            if v.quantity >= 27 {
-                recId = v.quantity - 27
-            } else {
-                recId = v.quantity
-            }
-        }
+        let recId = v.quantity
         let rlp = RLPItem(
             chainId: chainId,
             nonce: nonce,
