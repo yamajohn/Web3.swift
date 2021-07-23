@@ -7,30 +7,13 @@
 //
 
 import Foundation
+import CryptoSwift
 
 extension String {
     
     /// Convert a hex string "0xFF" or "FF" to Bytes
     func hexBytes() throws -> Bytes {
-        var string = self
-        // Check if we have a complete byte
-        guard !string.isEmpty else {
-            return Bytes()
-        }
-        
-        if string.count >= 2 {
-            let pre = string.startIndex
-            let post = string.index(string.startIndex, offsetBy: 2)
-            if String(string[pre..<post]) == "0x" {
-                // Remove prefix
-                string = String(string[post...])
-            }
-        }
-        
-        //normalize string, since hex strings can omit leading 0
-        string = string.count % 2 == 0 ? string : "0" + string
-
-        return try string.rawHex()
+        Array(hex: self)
     }
 
     func quantityHexBytes() throws -> Bytes {
