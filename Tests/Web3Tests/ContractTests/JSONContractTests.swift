@@ -134,7 +134,7 @@ class DynamicContractTests: QuickSpec {
                             return
                         }
                         waitUntil { done in
-                            web3.eth.sendTransaction(transaction: transaction) { response in
+                            web3.eth.sendTransaction(transaction: .legacy(transaction)) { response in
                                 switch response.status {
                                 case .success:
                                     done()

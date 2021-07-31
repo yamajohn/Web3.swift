@@ -62,3 +62,5 @@ extension EthereumPrivateKey: Guaranteeable {}
 extension EthereumPublicKey: Guaranteeable {}
 extension EthereumTransaction: Guaranteeable {}
 extension EthereumSignedTransaction: Guaranteeable {}
+extension EthereumTransactionV2: Guaranteeable {}
+extension EthereumSignedTransactionV2: Guaranteeable {}
