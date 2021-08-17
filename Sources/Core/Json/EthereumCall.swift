@@ -45,7 +45,7 @@ public struct EthereumCall: Codable {
         gasPrice: EthereumQuantity? = nil,
         value: EthereumQuantity? = nil,
         data: EthereumData? = nil
-        ) {
+    ) {
         self.from = from
         self.to = to
         self.gas = gas
@@ -126,11 +126,11 @@ public struct EthereumCallParams: Codable {
     }
 
     /// Integer block number, or the string "latest", "earliest" or "pending"
-    public let block: EthereumQuantityTag
+    public let block: EthereumQuantityTag?
 
     public init(
         call: EthereumCall,
-        block: EthereumQuantityTag
+        block: EthereumQuantityTag?
     ) {
         self.call = call
         self.block = block
@@ -176,7 +176,7 @@ public struct EthereumCallParams: Codable {
 
         let call = try container.decode(EthereumCall.self)
 
-        let block = try container.decode(EthereumQuantityTag.self)
+        let block = try container.decodeIfPresent(EthereumQuantityTag.self)
 
         self.init(call: call, block: block)
     }
@@ -186,7 +186,9 @@ public struct EthereumCallParams: Codable {
 
         try container.encode(call)
 
-        try container.encode(block)
+        if let block = block {
+            try container.encode(block)
+        }
     }
 }
 

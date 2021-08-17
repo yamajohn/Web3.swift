@@ -342,7 +342,7 @@ public struct Web3 {
 
         public func estimateGas(
             call: EthereumCall,
-            block: EthereumQuantityTag,
+            block: EthereumQuantityTag?,
             response: @escaping Web3ResponseCompletion<EthereumQuantity>
         ) {
             let req = RPCRequest<EthereumCallParams>(
