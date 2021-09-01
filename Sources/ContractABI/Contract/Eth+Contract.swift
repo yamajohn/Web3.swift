@@ -14,6 +14,14 @@ public enum ContractParsingError: Error, LocalizedError {
     case invalidKey
     
     public var localizedDescription: String {
+        _describingErrorMessage
+    }
+
+    public var errorDescription: String? {
+        _describingErrorMessage
+    }
+
+    private var _describingErrorMessage: String {
         switch self {
         case .invalidKey:
             return "ABI not found at the provided key."
