@@ -68,26 +68,6 @@ class DynamicContractTests: QuickSpec {
                             let generatedHexString = transaction?.data.hex()
                             expect(generatedHexString).notTo(beNil())
                         }
-
-                        it("should deploy") {
-                            let expectedHash = try? EthereumData(ethereumValue: "0x0e670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331")
-                            waitUntil { done in
-                                invocation.send(from: .testAddress, gas: 15000, gasPrice: nil) { (hash, error) in
-                                    expect(error).to(beNil())
-                                    expect(hash).to(equal(expectedHash))
-                                    done()
-                                }
-                            }
-                        }
-
-                        it("should fail to deploy when including a value") {
-                            waitUntil { done in
-                                invocation.send(from: .testAddress, value: EthereumQuantity(quantity: 1.eth), gas: 15000, gasPrice: nil) { (hash, error) in
-                                    expect(error as? InvocationError).to(equal(.invalidInvocation))
-                                    done()
-                                }
-                            }
-                        }
                     } catch {
                         fail(error.localizedDescription)
                     }

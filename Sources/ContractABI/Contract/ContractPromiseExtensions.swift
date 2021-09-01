@@ -24,18 +24,6 @@ public extension SolidityInvocation {
         }
     }
 
-    func send(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, gasPrice: EthereumQuantity?) -> Promise<EthereumData> {
-        return Promise { seal in
-            self.send(nonce: nonce, from: from, value: value, gas: gas, gasPrice: gasPrice, completion: seal.resolve)
-        }
-    }
-
-    func send(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> Promise<EthereumData> {
-        return Promise { seal in
-            self.send(nonce: nonce, from: from, value: value, gas: gas, maxPriorityFeePerGas: maxPriorityFeePerGas, maxFeePerGas: maxFeePerGas, completion: seal.resolve)
-        }
-    }
-
     func estimateGas(from: EthereumAddress? = nil, gas: EthereumQuantity? = nil, gasPrice: EthereumQuantity? = nil, value: EthereumQuantity? = nil) -> Promise<EthereumQuantity> {
         return Promise { seal in
             self.estimateGas(from: from, gas: gas, gasPrice: gasPrice, value: value, completion: seal.resolve)
@@ -45,21 +33,6 @@ public extension SolidityInvocation {
     func estimateGas(from: EthereumAddress? = nil, gas: EthereumQuantity? = nil, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?, value: EthereumQuantity? = nil) -> Promise<EthereumQuantity> {
         return Promise { seal in
             self.estimateGas(from: from, gas: gas, maxPriorityFeePerGas: maxPriorityFeePerGas, maxFeePerGas: maxFeePerGas, value: value, completion: seal.resolve)
-        }
-    }
-}
-
-public extension SolidityConstructorInvocation {
-
-    func send(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity = 0, gas: EthereumQuantity, gasPrice: EthereumQuantity?) -> Promise<EthereumData> {
-        return Promise { seal in
-            self.send(nonce: nonce, from: from, value: value, gas: gas, gasPrice: gasPrice, completion: seal.resolve)
-        }
-    }
-
-    func send(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity = 0, gas: EthereumQuantity, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> Promise<EthereumData> {
-        return Promise { seal in
-            self.send(nonce: nonce, from: from, value: value, gas: gas, maxPriorityFeePerGas: maxPriorityFeePerGas, maxFeePerGas: maxFeePerGas, completion: seal.resolve)
         }
     }
 }

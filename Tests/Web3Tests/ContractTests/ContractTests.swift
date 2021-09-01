@@ -98,18 +98,6 @@ class ContractTests: QuickSpec {
             let web3 = Web3(provider: provider)
             let contract = web3.eth.Contract(type: TestContract.self, address: .testAddress)
 
-            describe("Constructor method") {
-                it("should be able to be deployed") {
-                    waitUntil { done in
-                        contract.deploy(name: "Test Instance").send(from: .testAddress, value: 0, gas: 15000, gasPrice: nil).done { hash in
-                            done()
-                        }.catch { error in
-                            fail()
-                        }
-                    }
-                }
-            }
-
             describe("Constant method") {
 
                 let invocation = contract.balanceOf(address: .testAddress)
@@ -124,16 +112,6 @@ class ContractTests: QuickSpec {
                         }
                     }
                 }
-
-                it("should fail with send") {
-                    waitUntil { done in
-                        invocation.send(from: .testAddress, value: nil, gas: 0, gasPrice: 0).catch { error in
-                            expect(error as? InvocationError).to(equal(InvocationError.invalidInvocation))
-                            done()
-                        }
-                    }
-                }
-
             }
 
             describe("Payable method") {
@@ -145,20 +123,6 @@ class ContractTests: QuickSpec {
                         firstly {
                             invocation.estimateGas(from: .testAddress, value: EthereumQuantity(quantity: 1.eth))
                         }.done { gas in
-                            done()
-                        }.catch { error in
-                            fail(error.localizedDescription)
-                        }
-                    }
-                }
-
-                it("should succeed with send") {
-                    let expectedHash = try! EthereumData(ethereumValue: "0x0e670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331")
-                    waitUntil { done in
-                        firstly {
-                            invocation.send(from: .testAddress, value: EthereumQuantity(quantity: 1.eth), gas: 21000, gasPrice: nil)
-                        }.done { hash in
-                            expect(hash).to(equal(expectedHash))
                             done()
                         }.catch { error in
                             fail(error.localizedDescription)
@@ -180,18 +144,6 @@ class ContractTests: QuickSpec {
             describe("Non payable method") {
 
                 let invocation = contract.transfer(to: .testAddress, tokenId: 1)
-
-                it("should succeed with send") {
-                    let expectedHash = try! EthereumData(ethereumValue: "0x0e670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331")
-                    waitUntil { done in
-                        invocation.send(from: .testAddress, value: nil, gas: 12000, gasPrice: 700000).done { hash in
-                            expect(hash).to(equal(expectedHash))
-                            done()
-                        }.catch { error in
-                            fail(error.localizedDescription)
-                        }
-                    }
-                }
 
                 it("should fail with call") {
                     waitUntil { done in
