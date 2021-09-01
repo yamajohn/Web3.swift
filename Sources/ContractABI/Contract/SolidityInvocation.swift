@@ -32,10 +32,10 @@ public protocol SolidityInvocation {
     func createCall() -> EthereumCall?
     
     /// Generates an EthereumTransaction object
-    func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, gasPrice: EthereumQuantity?) -> EthereumTransaction?
+    func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, gasPrice: EthereumQuantity?) -> EthereumTransaction?
 
     /// Generates an EthereumTransactionV2 object
-    func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2?
+    func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2?
     
     /// Read data from the blockchain. Only available for constant functions.
     func call(block: EthereumQuantityTag, completion: @escaping ([String: Any]?, Error?) -> Void)
@@ -100,11 +100,11 @@ public struct SolidityReadInvocation: SolidityInvocation {
         return EthereumCall(from: nil, to: to, gas: nil, gasPrice: nil, value: nil, data: data)
     }
     
-    public func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, gasPrice: EthereumQuantity?) -> EthereumTransaction? {
+    public func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, gasPrice: EthereumQuantity?) -> EthereumTransaction? {
         return nil
     }
 
-    public func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2? {
+    public func createTransaction(nonce: EthereumQuantity?, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2? {
         return nil
     }
 }
@@ -125,13 +125,13 @@ public struct SolidityPayableInvocation: SolidityInvocation {
         self.handler = handler
     }
     
-    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, gasPrice: EthereumQuantity?) -> EthereumTransaction? {
+    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, gasPrice: EthereumQuantity?) -> EthereumTransaction? {
         guard let data = encodeABI() else { return nil }
         guard let to = handler.address else { return nil }
         return EthereumTransaction(nonce: nonce, gasPrice: gasPrice, gas: gas, from: from, to: to, value: value ?? 0, data: data)
     }
 
-    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2? {
+    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2? {
         guard let data = encodeABI() else { return nil }
         guard let to = handler.address else { return nil }
         return EthereumTransactionV2(nonce: nonce, maxPriorityFeePerGas: maxPriorityFeePerGas, maxFeePerGas: maxFeePerGas, gas: gas, from: from, to: to, value: value ?? 0, data: data)
@@ -185,13 +185,13 @@ public struct SolidityNonPayableInvocation: SolidityInvocation {
         self.handler = handler
     }
     
-    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, gasPrice: EthereumQuantity?) -> EthereumTransaction? {
+    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, gasPrice: EthereumQuantity?) -> EthereumTransaction? {
         guard let data = encodeABI() else { return nil }
         guard let to = handler.address else { return nil }
         return EthereumTransaction(nonce: nonce, gasPrice: gasPrice, gas: gas, from: from, to: to, value: value ?? 0, data: data)
     }
 
-    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2? {
+    public func createTransaction(nonce: EthereumQuantity? = nil, from: EthereumAddress, value: EthereumQuantity?, gas: EthereumQuantity?, maxPriorityFeePerGas: EthereumQuantity?, maxFeePerGas: EthereumQuantity?) -> EthereumTransactionV2? {
         guard let data = encodeABI() else { return nil }
         guard let to = handler.address else { return nil }
         return EthereumTransactionV2(nonce: nonce, maxPriorityFeePerGas: maxPriorityFeePerGas, maxFeePerGas: maxFeePerGas, gas: gas, from: from, to: to, value: value ?? 0, data: data)
