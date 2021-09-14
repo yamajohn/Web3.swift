@@ -32,15 +32,11 @@ public struct RPCResponse<Result: Codable>: Codable {
         
         /// Description
         public var localizedDescription: String {
-            _describingErrorMessage
+            message
         }
 
         public var errorDescription: String? {
-            _describingErrorMessage
-        }
-
-        private var _describingErrorMessage: String {
-            "\(message) (\(code))"
+            message
         }
     }
 }
