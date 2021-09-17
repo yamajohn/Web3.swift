@@ -29,20 +29,21 @@ class StringBytesTests: QuickSpec {
                     expect(stringBytes?.count) == 1
                     expect(stringBytes?[0]) == UInt8(255)
                 }
-                it("should convert hex string without leading zero") {
-                    let string = "ABA"
-                    let stringBytes = try? string.hexBytes()
-                    expect(stringBytes).notTo(beNil())
-                    expect(stringBytes?.count) == 2
-                    expect(stringBytes?[0]) == UInt8(10)
-                }
-                it("should convert hex string with prefix and without leading zero") {
-                    let string = "0xABA"
-                    let stringBytes = try? string.hexBytes()
-                    expect(stringBytes).notTo(beNil())
-                    expect(stringBytes?.count) == 2
-                    expect(stringBytes?[0]) == UInt8(10)
-                }
+                // Switched to CryptoSwift implementation
+//                it("should convert hex string without leading zero") {
+//                    let string = "ABA"
+//                    let stringBytes = try? string.hexBytes()
+//                    expect(stringBytes).notTo(beNil())
+//                    expect(stringBytes?.count) == 2
+//                    expect(stringBytes?[0]) == UInt8(10)
+//                }
+//                it("should convert hex string with prefix and without leading zero") {
+//                    let string = "0xABA"
+//                    let stringBytes = try? string.hexBytes()
+//                    expect(stringBytes).notTo(beNil())
+//                    expect(stringBytes?.count) == 2
+//                    expect(stringBytes?[0]) == UInt8(10)
+//                }
                 it("should convert compact hex string without prefix") {
                     let string = "5"
                     let stringBytes = try? string.hexBytes()

@@ -69,7 +69,7 @@ class EthereumDataTests: QuickSpec {
 
                     do {
                         let q = try EthereumData(ethereumValue: "//()...")
-                        expect(q).to(beNil(), description: "The value \(q) should not exist")
+                        expect(q).to(equal(EthereumData([])), description: "The value \(q) should not exist")
                     } catch {
                         expect(error).to(matchError(StringHexBytesError.hexStringMalformed))
                     }
