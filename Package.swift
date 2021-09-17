@@ -26,7 +26,7 @@ let package = Package(
         .package(name: "secp256k1", url: "https://github.com/1inch/secp256k1.swift", from: "0.2.1"),
 
         // PromiseKit dependency
-        .package(url: "https://github.com/mxcl/PromiseKit.git", from: "6.15.0"),
+        .package(url: "https://github.com/mxcl/PromiseKit.git", from: "6.15.3"),
 
         // Test dependencies
         .package(url: "https://github.com/Quick/Quick.git", from: "3.0.0"),
