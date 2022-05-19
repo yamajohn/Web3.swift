@@ -6,9 +6,7 @@
 //
 
 import Foundation
-#if !Web3CocoaPods
-    import Web3
-#endif
+import Web3
 
 public enum ContractParsingError: Error, LocalizedError {
     case invalidKey

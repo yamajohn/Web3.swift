@@ -7,9 +7,7 @@
 
 import Foundation
 import BigInt
-#if !Web3CocoaPods
-    import Web3
-#endif
+import Web3
 
 /// Base protocol for ERC721
 public protocol ERC721Contract: ERC165Contract {

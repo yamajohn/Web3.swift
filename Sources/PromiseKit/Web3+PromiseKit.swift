@@ -8,9 +8,7 @@
 
 import Foundation
 import PromiseKit
-#if !Web3CocoaPods
-    import Web3
-#endif
+import Web3
 
 public extension Web3 {
 
