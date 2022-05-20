@@ -10,8 +10,6 @@ import Foundation
 import XCTest
 import BigInt
 import Web3
-import PromiseKit
-import Web3PromiseKit
 import Web3ContractABI
 
 class TestEIP1559EthereumCall: XCTestCase {

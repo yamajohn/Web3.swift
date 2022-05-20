@@ -8,7 +8,6 @@
 import Quick
 import Nimble
 @testable import Web3
-import PromiseKit
 import BigInt
 import Foundation
 #if canImport(Web3ContractABI)
@@ -147,18 +146,20 @@ class DynamicContractTests: QuickSpec {
 
                 it("should represent structs with tuples") {
                     waitUntil { done in
-                        firstly {
-                            contract["f"]!(SolidityTuple(.uint(BigUInt(1)), .uint(BigUInt(2))), BigUInt(3)).call()
-                        }.done { outputs in
-                            guard let t = outputs["t"] as? [String: Any] else {
-                                fail("returned tuple should be decoded")
-                                return
+                        Task {
+                            do {
+                                let outputs = try await contract["f"]!(SolidityTuple(.uint(BigUInt(1)), .uint(BigUInt(2))), BigUInt(3)).call()
+                                guard let t = outputs["t"] as? [String: Any] else {
+                                    fail("returned tuple should be decoded")
+                                    return
+                                }
+                                expect(t["x"] as? BigUInt).to(equal(3))
+                                expect(t["y"] as? BigUInt).to(equal(4))
+                                done()
                             }
-                            expect(t["x"] as? BigUInt).to(equal(3))
-                            expect(t["y"] as? BigUInt).to(equal(4))
-                            done()
-                        }.catch { error in
-                            fail(error.localizedDescription)
+                            catch {
+                                fail(error.localizedDescription)
+                            }
                         }
                     }
                 }

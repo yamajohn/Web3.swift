@@ -8,8 +8,6 @@
 import XCTest
 import BigInt
 import Web3
-import PromiseKit
-import Web3PromiseKit
 
 class EthereumTransactionV2Tests: XCTestCase {
     func testEstimation() throws {
@@ -67,33 +65,30 @@ class EthereumTransactionV2Tests: XCTestCase {
         let web3 = Web3(rpcURL: "https://ropsten.infura.io/v3/0cbb4b8535bc4a928548b4d16ccf6bfa")
 
         let privateKey = try! EthereumPrivateKey(hexPrivateKey: "0xdf09d380d685a8233cda012eae34caa49e2a74e0ee1406fe6004b60144410a19")
-        firstly {
-            web3.eth.getTransactionCount(address: privateKey.address, block: .latest)
+        
+        Task {
+            do {
+                let nonce = try await web3.eth.getTransactionCount(address: privateKey.address, block: .latest)
+                let tx = try EthereumTransactionV2(
+                    nonce: nonce,
+                    maxPriorityFeePerGas: EthereumQuantity(quantity: 10.gwei),
+                    maxFeePerGas: EthereumQuantity(quantity: 80.gwei),
+                    gas: 21000,
+                    to: EthereumAddress(hex: "0x083fc10cE7e97CaFBaE0fE332a9c4384c5f54E45", eip55: true),
+                    value: EthereumQuantity(quantity: BigUInt(1337))
+                )
+                let signed = try tx.sign(with: privateKey, chainId: 3) // 3 - ropsten
+                
+                let hash = try await web3.eth.sendRawTransaction(transaction: signed.rawTransaction())
+                print(hash.hex())
+                exp.fulfill()
+            }
+            catch {
+                XCTFail("Failed to send tx \(error)")
+                exp.fulfill()
+            }
         }
-        .then { nonce -> Promise<EthereumSignedTransactionV2> in
-            let tx = try EthereumTransactionV2(
-                nonce: nonce,
-                maxPriorityFeePerGas: EthereumQuantity(quantity: 10.gwei),
-                maxFeePerGas: EthereumQuantity(quantity: 80.gwei),
-                gas: 21000,
-                to: EthereumAddress(hex: "0x083fc10cE7e97CaFBaE0fE332a9c4384c5f54E45", eip55: true),
-                value: EthereumQuantity(quantity: BigUInt(1337))
-            )
-            let signed = try tx.sign(with: privateKey, chainId: 3) // 3 - ropsten
-            return signed.promise
-        }
-        .then { tx in
-            web3.eth.sendRawTransaction(transaction: tx.rawTransaction())
-        }
-        .done { hash in
-            print(hash.hex())
-            exp.fulfill()
-        }
-        .catch { error in
-            XCTFail("Failed to send tx \(error)")
-            exp.fulfill()
-        }
-
+        
         wait(for: [exp], timeout: 60)
     }
 }

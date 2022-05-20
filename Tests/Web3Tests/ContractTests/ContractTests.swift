@@ -9,7 +9,6 @@ import Quick
 import Nimble
 @testable import Web3
 import BigInt
-import PromiseKit
 import Foundation
 #if canImport(Web3ContractABI)
     @testable import Web3ContractABI
@@ -104,11 +103,15 @@ class ContractTests: QuickSpec {
 
                 it("should succeed with call") {
                     waitUntil { done in
-                        invocation.call().done { values in
-                            expect(values["_balance"] as? BigUInt).to(equal(1))
-                            done()
-                        }.catch { error in
-                            fail(error.localizedDescription)
+                        Task {
+                            do {
+                                let values = try await invocation.call()
+                                expect(values["_balance"] as? BigUInt).to(equal(1))
+                                done()
+                            }
+                            catch {
+                                fail(error.localizedDescription)
+                            }
                         }
                     }
                 }
@@ -120,21 +123,28 @@ class ContractTests: QuickSpec {
 
                 it("should estimate gas") {
                     waitUntil { done in
-                        firstly {
-                            invocation.estimateGas(from: .testAddress, value: EthereumQuantity(quantity: 1.eth))
-                        }.done { gas in
-                            done()
-                        }.catch { error in
-                            fail(error.localizedDescription)
+                        Task {
+                            do {
+                                _ = try await invocation.estimateGas(from: .testAddress, value: EthereumQuantity(quantity: 1.eth))
+                                done()
+                            }
+                            catch {
+                                fail(error.localizedDescription)
+                            }
                         }
                     }
                 }
 
                 it("should fail with call") {
                     waitUntil { done in
-                        invocation.call().catch { error in
-                            expect(error as? InvocationError).to(equal(.invalidInvocation))
-                            done()
+                        Task {
+                            do {
+                                _ = try await invocation.call()
+                            }
+                            catch {
+                                expect(error as? InvocationError).to(equal(.invalidInvocation))
+                                done()
+                            }
                         }
                     }
                 }
@@ -147,9 +157,14 @@ class ContractTests: QuickSpec {
 
                 it("should fail with call") {
                     waitUntil { done in
-                        invocation.call().catch { error in
-                            expect(error as? InvocationError).to(equal(.invalidInvocation))
-                            done()
+                        Task {
+                            do {
+                                _ = try await invocation.call()
+                            }
+                            catch {
+                                expect(error as? InvocationError).to(equal(.invalidInvocation))
+                                done()
+                            }
                         }
                     }
                 }
@@ -160,19 +175,21 @@ class ContractTests: QuickSpec {
 
                 it("should be decoded from a matching log") {
                     waitUntil { done in
-                        firstly {
-                            web3.eth.getTransactionReceipt(transactionHash: hash)
-                        }.done { receipt in
-                            if let logs = receipt?.logs {
-                                for log in logs {
-                                    if let _ = try? ABI.decodeLog(event: TestContract.Transfer, from: log) {
-                                        done()
-                                        break
+                        Task {
+                            do {
+                                let receipt = try await web3.eth.getTransactionReceipt(transactionHash: hash)
+                                if let logs = receipt?.logs {
+                                    for log in logs {
+                                        if let _ = try? ABI.decodeLog(event: TestContract.Transfer, from: log) {
+                                            done()
+                                            break
+                                        }
                                     }
                                 }
                             }
-                        }.catch { error in
-                            fail(error.localizedDescription)
+                            catch {
+                                fail(error.localizedDescription)
+                            }
                         }
                     }
                 }
